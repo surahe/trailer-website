@@ -1,0 +1,27 @@
+{
+  "name": "trailer-website",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/surahe/trailer-website.git"
+  },
+  "keywords": [
+    "movie"
+  ],
+  "author": "Sura",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/surahe/trailer-website/issues"
+  },
+  "homepage": "https://github.com/surahe/trailer-website#readme",
+  "dependencies": {
+    "koa": "^2.7.0",
+    "koa-views": "^6.2.0",
+    "pug": "^2.0.3"
+  }
+}
