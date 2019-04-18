@@ -22,6 +22,14 @@
   "dependencies": {
     "koa": "^2.7.0",
     "koa-views": "^6.2.0",
-    "pug": "^2.0.3"
+    "nanoid": "^2.0.1",
+    "pug": "^2.0.3",
+    "puppeteer": "^1.14.0",
+    "qiniu": "^7.2.1",
+    "request": "^2.88.0",
+    "request-promise-native": "^1.0.7"
+  },
+  "devDependencies": {
+    "parcel-bundler": "^1.12.3"
   }
 }
