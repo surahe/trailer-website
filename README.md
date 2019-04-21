@@ -1,6 +1,14 @@
 # http的request获取数据
 const rp = require('request-promise-native')
 
+# 批量引入文件
+```
+const glob = require('glob')
+
+exports.initSchemas = () => {
+  glob.sync(resolve(__dirname, './schema', '**/*.js')).forEach(require)
+}
+```
 
 # 爬虫
 ## 匹配2个标签中的内容
