@@ -161,14 +161,15 @@ require('./server/index')
    1. 将 /server/routes/ 赋值给 apiPath
    2. 实例化 /server/lib/decorator 的 Route，将传入的参数app、apiPath赋值给类属性，实例化koa-router
    3. 调用 Route 的 init 方法
-      1. 导入 apiPath（即routes） 目录下的所有 js 文件
-        1. 执行controller修饰符，在Controller的prototype属性创建唯一属性symbolPrefix，值为将传入的路径参数
-        2. 执行get post修饰符，修饰Controller的方法，执行router函数
-        3. 在routerMap添加键值对，如键为{target: movieController,method:'get',path: '/'}，值为getMovies函数
+       1. 导入 apiPath（即routes） 目录下的所有 js 文件
+          1. 执行controller修饰符，在Controller的prototype属性创建唯一属性symbolPrefix，值为将传入的路径参数
+          2. 执行get post修饰符，修饰Controller的方法，执行router函数
+          3. 在routerMap添加键值对，如键为{target: movieController,method:'get',path: '/'}，值为getMovies函数
       2. 遍历 routerMap，获取conf, controller属性
-        1. 将controllers转化为数组
-        2. 若路径前缀存在，与配置中的path拼接为routerPath
-        3. 调用 koa实例的 router[method](routerPath, ...controllers)
+          1. 将controllers转化为数组
+          2. 若路径前缀存在，与配置中的path拼接为routerPath
+          3. 调用 koa实例的 router[method](routerPath, ...controllers)
+
 
 ## index.js
 导入 middleware文件夹内MIDDLEWARES数组的文件
