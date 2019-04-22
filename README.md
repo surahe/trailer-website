@@ -113,3 +113,142 @@ sources.map(async item => {
 })
 
 ```
+
+
+# babel
+## .babelrc
+在babel中使用 decorators等
+```
+{
+  "presets": ["@babel/preset-env"],
+  "plugins": [
+    "@babel/plugin-transform-runtime",
+    ["@babel/plugin-proposal-decorators", { "legacy": true }]
+  ]
+}
+```
+
+## package.json
+@babel/node可能没用上
+```
+{
+  "dependencies": {
+    "@babel/plugin-transform-runtime": "^7.4.3",
+    "@babel/runtime": "^7.4.3",
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.4.3",
+    "@babel/core": "^7.4.3",
+    "@babel/node": "^7.2.2",
+    "@babel/plugin-proposal-decorators": "^7.4.0",
+    "@babel/polyfill": "^7.4.3",
+    "@babel/preset-env": "^7.4.3"
+  }
+}
+```
+## start.js
+```
+require('@babel/register')
+require("@babel/polyfill")
+require('./server/index')
+```
+
+
+# 路由
+步骤
+1. 在 index.js 调用中间件 /server/middleware/router.js
+2. 执行 router.js 的 router 方法
+   1. 将 /server/routes/ 赋值给 apiPath
+   2. 实例化 /server/lib/decorator 的 Route，将传入的参数app、apiPath赋值给类属性，实例化koa-router
+   3. 调用 Route 的 init 方法
+      1. 导入 apiPath（即routes） 目录下的所有 js 文件
+        1. 执行controller修饰符，在Controller的prototype属性创建唯一属性symbolPrefix，值为将传入的路径参数
+        2. 执行get post修饰符，修饰Controller的方法，执行router函数
+        3. 在routerMap添加键值对，如键为{target: movieController,method:'get',path: '/'}，值为getMovies函数
+      2. 遍历 routerMap，获取conf, controller属性
+        1. 将controllers转化为数组
+        2. 若路径前缀存在，与配置中的path拼接为routerPath
+        3. 调用 koa实例的 router[method](routerPath, ...controllers)
+
+## index.js
+导入 middleware文件夹内MIDDLEWARES数组的文件
+```
+const R = require('ramda')
+const MIDDLEWARES = ['router']
+
+const useMiddlewares = (app) => {
+  R.map(
+    R.compose(
+      R.forEachObjIndexed(
+        initWith => initWith(app)
+      ),
+      require,
+      name => resolve(__dirname, `./middleware/${name}`)
+    )
+  )(MIDDLEWARES)
+}
+
+;(async() => {
+  await connect()
+  const app = new Koa()
+  await useMiddlewares(app)
+  
+  app.listen(8888)
+})()
+```
+
+## middleware/router.js
+以app和routes目录路径为参数，初始化decorator
+```
+const {resolve} = require('path')
+const {Route} = require('../lib/decorator')
+
+export const router = app => {
+  const apiPath = resolve(__dirname, '../routes')
+  const router = new Route(app, apiPath)
+  router.init()
+}
+```
+
+## routes\movie.js
+```
+const {
+  controller,
+  get
+} = require('../lib/decorator')
+const {
+  getAllMovies,
+  getMovieDetail,
+  getRelativeMovies
+} = require('../service/movie')
+
+@controller('/api/v0/movies')
+export class movieController {
+  @get('/')
+  async getMovies (ctx, next) {
+    const { type, year } = ctx.query
+    const movies = await getAllMovies(type, year)
+
+    ctx.body = {
+      success: true,
+      data: movies
+    }
+  }
+
+  @get('/:id')
+  async getMovieDetail (ctx, next) {
+    const id = ctx.params.id
+    const movie = await getMovieDetail(id)
+    const relativeMovies = await getRelativeMovies(movie)
+
+    ctx.body = {
+      data: {
+        movie,
+        relativeMovies
+      },
+      success: true
+    }
+  }
+}
+
+```
